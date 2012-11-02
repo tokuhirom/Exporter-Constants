@@ -4,16 +4,13 @@ use warnings;
 use utf8;
 use parent qw/Exporter/;
 
-use Exporter::Constants;
-
 our @EXPORT;
 
-declare_constant(
-    \@EXPORT, +{
+use Exporter::Constants (
+    \@EXPORT => {
         TYPE_A => 4649,
         TYPE_B => 5963,
-        TYPE_C => 1192,
-    }
+    },
 );
 
 1;

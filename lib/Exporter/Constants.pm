@@ -7,18 +7,19 @@ our $VERSION = '0.01';
 use Exporter;
 use parent qw/Exporter/;
 
-our @EXPORT = qw/declare_constant/;
-
-sub declare_constant {
-    my ($array, $stuff) = @_;
-
+sub import {
+    my $class = shift;
     my $pkg = caller(0);
 
-    no strict 'refs';
-    unless ($pkg->isa('Exporter')) {
-        unshift @{"$pkg\::ISA"}, 'Exporter';
+    if (@_) {
+        _declare_constant($pkg, @_);
     }
+}
 
+sub _declare_constant {
+    my ($pkg, $array, $stuff) = @_;
+
+    no strict 'refs';
     while (my ($k, $v) = each %$stuff) {
         *{"$pkg\::$k"} = sub () { $v };
         unshift @$array, $k;
@@ -40,9 +41,8 @@ Exporter::Constants - Declare constants and export it.
     # declare constants and push to @EXPORT
     use parent qw/Exporter/;
     our @EXPORT;
-    use Exporter::Constants;
 
-    declare_constant(
+    use Exporter::Constants (
         \@EXPORT => {
             'TYPE_A' => 4649,
             'TYPE_B' => 5963
