@@ -40,6 +40,7 @@ Exporter::Constants - Declare constants and export it.
     # declare constants and push to @EXPORT
     use parent qw/Exporter/;
     our @EXPORT;
+    use Exporter::Constants;
 
     declare_constant(
         \@EXPORT => {
