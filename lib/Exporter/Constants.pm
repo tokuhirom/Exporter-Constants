@@ -4,7 +4,25 @@ use warnings;
 use 5.010001;
 our $VERSION = '0.01';
 
+use Exporter;
 
+sub import {
+    my $class = shift;
+    return if @_==0;
+
+    my $pkg = caller(0);
+
+    no strict 'refs';
+    unless ($pkg->isa('Exporter')) {
+        unshift @{"$pkg\::ISA"}, 'Exporter';
+    }
+
+    my $stuff = shift @_;
+    while (my ($k, $v) = each %$stuff) {
+        *{"$pkg\::$k"} = sub () { $v };
+        unshift @{"$pkg\::EXPORT"}, $k;
+    }
+}
 
 1;
 __END__
@@ -13,21 +31,37 @@ __END__
 
 =head1 NAME
 
-Exporter::Constants - ...
+Exporter::Constants - Declare constants and export it.
 
 =head1 SYNOPSIS
 
-  use Exporter::Constants;
+    package My::Constants;
+    # declare constants and push to @EXPORT
+    use Exporter::Constants +{
+        'TYPE_A' => 4649,
+        'TYPE_B' => 5963
+    };
+
+    package main;
+    use My::Constants;
+
+    # constants are exported.
+    print TYPE_A, "\n";
 
 =head1 DESCRIPTION
 
-Exporter::Constants is
+This module help to declare & export constants.
+
+=head1 MOTIVATION
+
+I want to declare My::Own::Constants package when writing applications.
+These class declares constants and export to other application classes.
+
+I can do this task by Exporter.pm and constants.pm. But I want to do it at once.
 
 =head1 AUTHOR
 
 Tokuhiro Matsuno E<lt>tokuhirom AAJKLFJEF@ GMAIL COME<gt>
-
-=head1 SEE ALSO
 
 =head1 LICENSE
 
