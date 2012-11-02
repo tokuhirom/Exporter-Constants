@@ -5,10 +5,12 @@ use 5.010001;
 our $VERSION = '0.01';
 
 use Exporter;
+use parent qw/Exporter/;
 
-sub import {
-    my $class = shift;
-    return if @_==0;
+our @EXPORT = qw/declare_constant/;
+
+sub declare_constant {
+    my ($array, $stuff) = @_;
 
     my $pkg = caller(0);
 
@@ -17,10 +19,9 @@ sub import {
         unshift @{"$pkg\::ISA"}, 'Exporter';
     }
 
-    my $stuff = shift @_;
     while (my ($k, $v) = each %$stuff) {
         *{"$pkg\::$k"} = sub () { $v };
-        unshift @{"$pkg\::EXPORT"}, $k;
+        unshift @$array, $k;
     }
 }
 
@@ -37,10 +38,15 @@ Exporter::Constants - Declare constants and export it.
 
     package My::Constants;
     # declare constants and push to @EXPORT
-    use Exporter::Constants +{
-        'TYPE_A' => 4649,
-        'TYPE_B' => 5963
-    };
+    use parent qw/Exporter/;
+    our @EXPORT;
+
+    declare_constant(
+        \@EXPORT => {
+            'TYPE_A' => 4649,
+            'TYPE_B' => 5963
+        }
+    );
 
     package main;
     use My::Constants;
